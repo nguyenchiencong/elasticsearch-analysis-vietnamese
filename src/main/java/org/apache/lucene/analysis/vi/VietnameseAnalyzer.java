@@ -21,7 +21,6 @@ import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.analysis.util.StopwordAnalyzerBase;
 import org.apache.lucene.util.Version;
-import org.elasticsearch.common.lucene.Lucene;
 
 import java.io.Reader;
 import java.util.Arrays;
@@ -43,7 +42,7 @@ public class VietnameseAnalyzer extends StopwordAnalyzerBase {
                 "rằng", "rằng", "rất", "rất", "rồi", "sau", "sẽ", "so", "sự", "tại", "theo", "thì", "trên", "trước",
                 "từ", "từng", "và", "vẫn", "vào", "vậy", "vì", "việc", "với", "vừa"
         );
-        final CharArraySet stopSet = new CharArraySet(Lucene.VERSION, stopWords, false);
+        final CharArraySet stopSet = new CharArraySet(stopWords, false);
         VIETNAMESE_STOP_WORDS_SET = CharArraySet.unmodifiableSet(stopSet);
     }
 
@@ -68,25 +67,22 @@ public class VietnameseAnalyzer extends StopwordAnalyzerBase {
     /**
      * Builds an analyzer with the default stop words: {@link #getDefaultStopSet}.
      */
-    public VietnameseAnalyzer(Version matchVersion) {
-        this(matchVersion, DefaultSetHolder.DEFAULT_STOP_SET);
+    public VietnameseAnalyzer() {
+        this(DefaultSetHolder.DEFAULT_STOP_SET);
     }
 
     /**
-     * Builds an analyzer with the given stop words.
-     *
-     * @param matchVersion lucene compatibility version
-     * @param stopWords    a stopWord set
+     * Builds an analyzer with the default stop words
      */
-    public VietnameseAnalyzer(Version matchVersion, CharArraySet stopWords) {
-        super(matchVersion, stopWords);
+    public VietnameseAnalyzer(CharArraySet stopWords) {
+        super(stopWords);
     }
 
     @Override
     protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
         final Tokenizer tokenizer = new VietnameseTokenizer(reader);
-        TokenStream tokenStream = new LowerCaseFilter(matchVersion, tokenizer);
-        tokenStream = new StopFilter(matchVersion, tokenStream, stopwords);
+        TokenStream tokenStream = new LowerCaseFilter(tokenizer);
+        tokenStream = new StopFilter(tokenStream, stopwords);
         return new TokenStreamComponents(tokenizer, tokenStream);
     }
 }
